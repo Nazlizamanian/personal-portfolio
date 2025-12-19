@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="/">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Personal Portfolio - Software Developer">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png">
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:title" content="Personal Portfolio">
+  <meta property="og:description" content="Software Developer Portfolio">
+  <meta property="og:type" content="website">
+  
+  <title>Personal Portfolio</title>
+  
+  <!-- Fonts preload for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <style>
+    /* Loading screen styles */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0A0A0F;
+      overflow: hidden;
+    }
+    
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      background: linear-gradient(135deg, #0A0A0F 0%, #12121A 50%, #0A0A0F 100%);
+    }
+    
+    .loading-logo {
+      font-family: 'Georgia', serif;
+      font-size: 48px;
+      font-weight: 300;
+      color: #D4AF37;
+      letter-spacing: 6px;
+      margin-bottom: 32px;
+    }
+    
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 2px solid #2A2A35;
+      border-top-color: #D4AF37;
+      border-radius: 50%;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      margin-top: 24px;
+      font-family: 'Georgia', serif;
+      font-size: 14px;
+      color: #707078;
+      letter-spacing: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-container" id="loading">
+    <div class="loading-logo">NZ</div>
+    <div class="loading-spinner"></div>
+    <div class="loading-text">LOADING</div>
+  </div>
+  
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
+

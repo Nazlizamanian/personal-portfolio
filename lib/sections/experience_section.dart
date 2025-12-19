@@ -12,6 +12,7 @@ class ExperienceSection extends StatelessWidget {
       subtitle: 'Spotify',
       description: '',
       period: 'Jun 2025 - Present',
+      location: 'Headquarters, Stockholm, Sweden',
       link: 'https://www.spotify.com/',
       linkText: 'Spotify',
       subRoles: [
@@ -44,12 +45,13 @@ class ExperienceSection extends StatelessWidget {
           'between companies and their customers. Worked with NoSQL databases and '
           'ensured the application was responsive.',
       period: 'Apr 2024 - May 2024',
+      location: 'Jönköping, Sweden',
       link: 'https://www.albia.se/',
       linkText: 'Albia',
     ),
     TimelineItem(
       title: 'Event & Operations Coordinator',
-      subtitle: 'O\'Learys Mall Of Scandinavia, Stockholm',
+      subtitle: 'O\'Learys Mall Of Scandinavia',
       description:
           'Responsible for planning and coordinating all events, conferences, pentathlons '
           'and other activities. Maintained operational oversight of key departments including '
@@ -57,6 +59,7 @@ class ExperienceSection extends StatelessWidget {
           'between customers and staff. Supervised daily operations and ensured compliance with '
           'health and safety regulations to maintain a high-quality guest experience.',
       period: 'Apr 2016 - Jan 2020',
+      location: 'Stockholm, Sweden',
     ),
   ];
 

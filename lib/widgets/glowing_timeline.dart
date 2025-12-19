@@ -19,6 +19,7 @@ class TimelineItem {
   final String subtitle;
   final String description;
   final String period;
+  final String? location;
   final String? link;
   final String? linkText;
   final List<SubRole>? subRoles;
@@ -28,6 +29,7 @@ class TimelineItem {
     required this.subtitle,
     required this.description,
     required this.period,
+    this.location,
     this.link,
     this.linkText,
     this.subRoles,
@@ -231,13 +233,39 @@ class _TimelineContent extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  item.subtitle,
-                  style: TextStyle(
-                    color: AppTheme.accentGoldLight,
-                    fontSize: isMobile ? 16 : 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.subtitle,
+                      style: TextStyle(
+                        color: AppTheme.accentGoldLight,
+                        fontSize: isMobile ? 16 : 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (item.location != null) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: isMobile ? 14 : 16,
+                            color: AppTheme.textSecondary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            item.location!,
+                            style: TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: isMobile ? 12 : 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
                 ),
               ),
               // Period badge

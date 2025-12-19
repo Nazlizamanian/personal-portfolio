@@ -3,11 +3,11 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"flutter_bootstrap.js": "7a44a529011e6eb2c3919133e19692b4",
+const RESOURCES = {"flutter_bootstrap.js": "0184957e48e477f2b15d11b404aa2af5",
 "version.json": "2a4bdd3370ee966319e180d97d91e050",
 "index.html": "9706a78d62346e0a8e661c0083763506",
 "/": "9706a78d62346e0a8e661c0083763506",
-"main.dart.js": "40eee0646560fdfa28636e1da1ddb39a",
+"main.dart.js": "a35e688c454d055df84190e3783a7d2a",
 "flutter.js": "24bc71911b75b5f8135c949e27a2984e",
 "manifest.json": "96056424eadc2c858b6d4a2d8096295a",
 "assets/NOTICES": "ee700545f35dc93e99bd34a01b7eef79",
@@ -19,7 +19,7 @@ const RESOURCES = {"flutter_bootstrap.js": "7a44a529011e6eb2c3919133e19692b4",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
 "assets/shaders/stretch_effect.frag": "40d68efbbf360632f614c731219e95f0",
 "assets/AssetManifest.bin": "6293a44b4aa65e788b59d8c5d9455ca0",
-"assets/fonts/MaterialIcons-Regular.otf": "3b5e702a49e10c2938997646837695ec",
+"assets/fonts/MaterialIcons-Regular.otf": "35d78ea38a19b812be5fe4f132ce3b40",
 "assets/assets/images/WeatherApp.png": "650976e360442eb151878651b08e8cb2",
 "assets/assets/images/MealplannerApp.png": "5aaeaa6de5c01bc50dedc3b68cd73116",
 "assets/assets/images/JKPGCity.png": "de8229c4c5dd11a46cc2f7a4845aa8d2",

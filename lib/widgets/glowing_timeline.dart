@@ -230,66 +230,136 @@ class _TimelineContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Company/Institution header
-          Row(
-            children: [
-              Expanded(
-                child: Column(
+          if (isMobile) ...[
+            // Mobile layout: stack vertically
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      item.subtitle,
-                      style: TextStyle(
-                        color: AppTheme.accentGoldLight,
-                        fontSize: isMobile ? 16 : 18,
-                        fontWeight: FontWeight.w600,
+                    Flexible(
+                      child: Text(
+                        item.subtitle,
+                        style: TextStyle(
+                          color: AppTheme.accentGoldLight,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                    if (item.location != null) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: isMobile ? 14 : 16,
-                            color: AppTheme.textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            item.location!,
-                            style: TextStyle(
-                              color: AppTheme.textSecondary,
-                              fontSize: isMobile ? 12 : 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
+                    const SizedBox(width: 8),
+                    // Period badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppTheme.accentGold.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppTheme.accentGold.withValues(alpha: 0.3),
+                        ),
                       ),
-                    ],
+                      child: Text(
+                        item.period,
+                        style: const TextStyle(
+                          color: AppTheme.accentGold,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              // Period badge
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppTheme.accentGold.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppTheme.accentGold.withValues(alpha: 0.3),
+                if (item.location != null) ...[
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 14,
+                        color: AppTheme.textSecondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          item.location!,
+                          style: const TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ] else ...[
+            // Desktop layout: side by side
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.subtitle,
+                        style: const TextStyle(
+                          color: AppTheme.accentGoldLight,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (item.location != null) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on_outlined,
+                              size: 16,
+                              color: AppTheme.textSecondary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              item.location!,
+                              style: const TextStyle(
+                                color: AppTheme.textSecondary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
                   ),
                 ),
-                child: Text(
-                  item.period,
-                  style: TextStyle(
-                    color: AppTheme.accentGold,
-                    fontSize: isMobile ? 11 : 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1,
+                // Period badge
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentGold.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppTheme.accentGold.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Text(
+                    item.period,
+                    style: const TextStyle(
+                      color: AppTheme.accentGold,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
           const SizedBox(height: 16),
           
           // If has sub-roles, show them with mini timeline

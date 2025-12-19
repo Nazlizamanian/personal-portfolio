@@ -38,85 +38,97 @@ class HeroSection extends StatelessWidget {
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Animated greeting in multiple languages
                   SizedBox(
                     height: isMobile ? 36 : 44,
-                    child: AnimatedTextKit(
-                      repeatForever: true,
-                      animatedTexts: [
-                        TypewriterAnimatedText(
-                          "Hello I'm Nazli,",
-                          textStyle: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
-                              ?.copyWith(
-                                color: AppTheme.accentGold,
-                                letterSpacing: 2,
-                                fontSize: isMobile ? 20 : 28,
-                              ),
-                          speed: const Duration(milliseconds: 80),
-                        ),
-                        TypewriterAnimatedText(
-                          'Γεια σας είμαι η Nazli,',
-                          textStyle: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
-                              ?.copyWith(
-                                color: AppTheme.accentGold,
-                                letterSpacing: 2,
-                                fontSize: isMobile ? 20 : 28,
-                              ),
-                          speed: const Duration(milliseconds: 80),
-                        ),
-                        TypewriterAnimatedText(
-                          'Hej jag heter Nazli,',
-                          textStyle: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
-                              ?.copyWith(
-                                color: AppTheme.accentGold,
-                                letterSpacing: 2,
-                                fontSize: isMobile ? 20 : 28,
-                              ),
-                          speed: const Duration(milliseconds: 80),
-                        ),
-                        TypewriterAnimatedText(
-                          'سلام من نازلی هستم',
-                          textStyle: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
-                              ?.copyWith(
-                                color: AppTheme.accentGold,
-                                letterSpacing: 2,
-                                fontSize: isMobile ? 20 : 28,
-                              ),
-                          speed: const Duration(milliseconds: 80),
-                        ),
-                      ],
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: AnimatedTextKit(
+                        repeatForever: true,
+                        animatedTexts: [
+                          TypewriterAnimatedText(
+                            "Hello I'm Nazli,",
+                            textStyle: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  color: AppTheme.accentGold,
+                                  letterSpacing: 2,
+                                  fontSize: isMobile ? 20 : 28,
+                                ),
+                            speed: const Duration(milliseconds: 80),
+                          ),
+                          TypewriterAnimatedText(
+                            'Γεια σας είμαι η Nazli,',
+                            textStyle: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  color: AppTheme.accentGold,
+                                  letterSpacing: 2,
+                                  fontSize: isMobile ? 20 : 28,
+                                ),
+                            speed: const Duration(milliseconds: 80),
+                          ),
+                          TypewriterAnimatedText(
+                            'Hej jag heter Nazli,',
+                            textStyle: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  color: AppTheme.accentGold,
+                                  letterSpacing: 2,
+                                  fontSize: isMobile ? 20 : 28,
+                                ),
+                            speed: const Duration(milliseconds: 80),
+                          ),
+                          TypewriterAnimatedText(
+                            'سلام من نازلی هستم',
+                            textStyle: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  color: AppTheme.accentGold,
+                                  letterSpacing: 2,
+                                  fontSize: isMobile ? 20 : 28,
+                                ),
+                            speed: const Duration(milliseconds: 80),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   // Name
-                  Text(
-                    'Nazli Zamanian',
-                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                          fontSize: isMobile ? 42 : 72,
-                          fontWeight: FontWeight.w300,
-                          letterSpacing: isMobile ? 2 : 6,
-                        ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Nazli Zamanian',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                            fontSize: isMobile ? 42 : 72,
+                            fontWeight: FontWeight.w300,
+                            letterSpacing: isMobile ? 2 : 6,
+                          ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   // Role - static text
-                  Text(
-                    'Software Engineer',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium
-                        ?.copyWith(
-                          color: AppTheme.textSecondary,
-                          letterSpacing: 2,
-                        ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Software Engineer',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(
+                            color: AppTheme.textSecondary,
+                            letterSpacing: 2,
+                          ),
+                    ),
                   ),
                   const SizedBox(height: 48),
                   // CTA Button

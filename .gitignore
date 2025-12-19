@@ -33,7 +33,6 @@ local.properties
 /ios/Flutter/Flutter.podspec
 
 # Web
-/lib/generated_plugin_registrant.dart
 
 # Test
 coverage/

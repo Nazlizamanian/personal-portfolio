@@ -95,11 +95,12 @@ class _ProjectsSectionState extends State<ProjectsSection> {
 
   Widget _buildHorizontalScroll(BuildContext context, bool isMobile) {
     final cardHeight = isMobile ? 480.0 : 520.0;
+    const hoverOffset = 12.0; // Extra space for hover effect
 
     return Column(
       children: [
         SizedBox(
-          height: cardHeight,
+          height: cardHeight + hoverOffset,
           child: ScrollConfiguration(
             behavior: ScrollConfiguration.of(context).copyWith(
               dragDevices: {
@@ -111,8 +112,10 @@ class _ProjectsSectionState extends State<ProjectsSection> {
               controller: _scrollController,
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(
-                horizontal: AppTheme.getHorizontalPadding(context),
+              padding: EdgeInsets.only(
+                left: AppTheme.getHorizontalPadding(context),
+                right: AppTheme.getHorizontalPadding(context),
+                top: hoverOffset,
               ),
               itemCount: _projects.length,
               itemBuilder: (context, index) {

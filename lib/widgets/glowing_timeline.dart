@@ -432,26 +432,39 @@ class _LinkButtonState extends State<_LinkButton> {
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
         onTap: widget.onTap,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              widget.text,
-              style: TextStyle(
-                color: _isHovered ? AppTheme.accentGoldLight : AppTheme.accentGold,
-                fontSize: widget.isMobile ? 13 : 14,
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.underline,
-                decorationColor: _isHovered ? AppTheme.accentGoldLight : AppTheme.accentGold,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: EdgeInsets.symmetric(
+            horizontal: widget.isMobile ? 16 : 20,
+            vertical: widget.isMobile ? 10 : 12,
+          ),
+          decoration: BoxDecoration(
+            color: _isHovered ? AppTheme.accentGold : Colors.transparent,
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(
+              color: AppTheme.accentGold,
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.open_in_new,
+                size: widget.isMobile ? 14 : 16,
+                color: _isHovered ? AppTheme.primaryDark : AppTheme.accentGold,
               ),
-            ),
-            const SizedBox(width: 6),
-            Icon(
-              Icons.arrow_forward,
-              size: widget.isMobile ? 14 : 16,
-              color: _isHovered ? AppTheme.accentGoldLight : AppTheme.accentGold,
-            ),
-          ],
+              const SizedBox(width: 8),
+              Text(
+                widget.text,
+                style: TextStyle(
+                  color: _isHovered ? AppTheme.primaryDark : AppTheme.accentGold,
+                  fontSize: widget.isMobile ? 12 : 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

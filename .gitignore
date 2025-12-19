@@ -1,0 +1,44 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+build/
+*.iml
+.metadata
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDE
+.idea/
+*.swp
+*.swo
+.vscode/
+
+# macOS
+.DS_Store
+*.pem
+
+# Android
+/android/app/debug
+/android/app/profile
+/android/app/release
+*.jks
+*.keystore
+local.properties
+
+# iOS
+/ios/Flutter/.last_build_id
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+
+# Web
+/lib/generated_plugin_registrant.dart
+
+# Test
+coverage/
+
+# Misc
+*.log
+*.cache
+

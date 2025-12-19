@@ -199,7 +199,12 @@ class _SkillChipState extends State<_SkillChip> {
 
   @override
   Widget build(BuildContext context) {
-    final skillColor = Color(int.parse('0xFF${widget.skill.color}'));
+    final rawColor = Color(int.parse('0xFF${widget.skill.color}'));
+    // Use a light grey border for dark colors (like iOS, XCTest with black icons)
+    final isDarkColor = rawColor.computeLuminance() < 0.2;
+    final borderColor = isDarkColor 
+        ? const Color(0xFF9E9E9E) // Light grey for dark icons
+        : rawColor;
     
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -207,28 +212,25 @@ class _SkillChipState extends State<_SkillChip> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         transform: Matrix4.identity()
-          ..translate(0.0, _isHovered ? -4.0 : 0.0),
+          ..scale(_isHovered ? 1.05 : 1.0),
+        transformAlignment: Alignment.center,
         padding: EdgeInsets.symmetric(
           horizontal: widget.isMobile ? 14 : 18,
           vertical: widget.isMobile ? 10 : 12,
         ),
         decoration: BoxDecoration(
-          color: _isHovered 
-              ? AppTheme.cardDark 
-              : AppTheme.cardDark.withValues(alpha: 0.6),
+          color: AppTheme.cardDark.withValues(alpha: 0.6),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _isHovered 
-                ? skillColor.withValues(alpha: 0.6)
-                : AppTheme.dividerColor,
-            width: _isHovered ? 2 : 1,
+            color: borderColor.withValues(alpha: 0.6),
+            width: 1.5,
           ),
           boxShadow: _isHovered
               ? [
                   BoxShadow(
-                    color: skillColor.withValues(alpha: 0.3),
+                    color: borderColor.withValues(alpha: 0.4),
                     blurRadius: 16,
-                    offset: const Offset(0, 6),
+                    offset: const Offset(0, 4),
                   ),
                 ]
               : null,
@@ -247,7 +249,7 @@ class _SkillChipState extends State<_SkillChip> {
                 placeholderBuilder: (context) => Icon(
                   Icons.code,
                   size: widget.isMobile ? 26 : 32,
-                  color: skillColor,
+                  color: rawColor,
                 ),
               ),
             ),
@@ -256,7 +258,7 @@ class _SkillChipState extends State<_SkillChip> {
             Text(
               widget.skill.name,
               style: TextStyle(
-                color: _isHovered ? AppTheme.textPrimary : AppTheme.textSecondary,
+                color: AppTheme.textPrimary,
                 fontSize: widget.isMobile ? 13 : 15,
                 fontWeight: FontWeight.w500,
               ),

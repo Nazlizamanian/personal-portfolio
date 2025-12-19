@@ -109,7 +109,7 @@ class HeroSection extends StatelessWidget {
                   const SizedBox(height: 16),
                   // Role - static text
                   Text(
-                    'Mobile Engineer',
+                    'Software Engineer',
                     style: Theme.of(context)
                         .textTheme
                         .headlineMedium

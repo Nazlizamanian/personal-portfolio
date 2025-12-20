@@ -326,18 +326,12 @@ class _HeroSectionState extends State<HeroSection>
                 ),
               ),
             ),
-            // Subtle animated grid lines
+            // Subtle grid pattern overlay (CSS-like effect without external image)
             Opacity(
-              opacity: 0.015 + breathe * 0.005,
-              child: Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      'https://www.transparenttextures.com/patterns/dark-geometric.png',
-                    ),
-                    repeat: ImageRepeat.repeat,
-                  ),
-                ),
+              opacity: 0.03 + breathe * 0.01,
+              child: CustomPaint(
+                painter: _GridPatternPainter(),
+                size: Size.infinite,
               ),
             ),
           ],
@@ -402,4 +396,27 @@ class _ExploreButtonState extends State<_ExploreButton> {
   }
 }
 
+// Custom painter for subtle grid pattern (replaces external texture image)
+class _GridPatternPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.03)
+      ..strokeWidth = 0.5;
 
+    const spacing = 40.0;
+
+    // Draw vertical lines
+    for (double x = 0; x < size.width; x += spacing) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+
+    // Draw horizontal lines
+    for (double y = 0; y < size.height; y += spacing) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}

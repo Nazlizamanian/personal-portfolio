@@ -21,9 +21,12 @@ class HeroSection extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             AppTheme.primaryDark,
+            const Color(0xFF070714),  // Dark blue
+            const Color(0xFF0A0A1C),  // Deeper blue
+            const Color(0xFF0D0818),  // Blue with hint of purple
             AppTheme.secondaryDark,
-            AppTheme.primaryDark.withValues(alpha: 0.95),
           ],
+          stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
         ),
       ),
       child: Stack(
@@ -145,10 +148,10 @@ class HeroSection extends StatelessWidget {
   Widget _buildBackgroundDecorations(BuildContext context) {
     return Stack(
       children: [
-        // Top left glow
+        // Top left blue glow
         Positioned(
-          top: -100,
-          left: -100,
+          top: -120,
+          left: -120,
           child: Container(
             width: 400,
             height: 400,
@@ -156,14 +159,15 @@ class HeroSection extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  AppTheme.accentGold.withValues(alpha: 0.1),
+                  AppTheme.accentBlue.withValues(alpha: 0.12),
+                  AppTheme.accentBlue.withValues(alpha: 0.04),
                   Colors.transparent,
                 ],
               ),
             ),
           ),
         ),
-        // Bottom right glow
+        // Bottom right purple glow
         Positioned(
           bottom: -150,
           right: -150,
@@ -174,7 +178,26 @@ class HeroSection extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  AppTheme.accentGold.withValues(alpha: 0.08),
+                  AppTheme.accentGold.withValues(alpha: 0.12),
+                  AppTheme.accentGoldLight.withValues(alpha: 0.05),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+        // Center-right accent
+        Positioned(
+          top: MediaQuery.of(context).size.height * 0.25,
+          right: -80,
+          child: Container(
+            width: 280,
+            height: 280,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppTheme.accentPink.withValues(alpha: 0.08),
                   Colors.transparent,
                 ],
               ),
@@ -183,7 +206,7 @@ class HeroSection extends StatelessWidget {
         ),
         // Grid pattern overlay
         Opacity(
-          opacity: 0.03,
+          opacity: 0.02,
           child: Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -221,28 +244,29 @@ class _ExploreButtonState extends State<_ExploreButton> {
         onTap: widget.onPressed,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
+          transform: Matrix4.identity()..scale(_isHovered ? 1.05 : 1.0),
+          transformAlignment: Alignment.center,
           padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
           decoration: BoxDecoration(
-            color: _isHovered ? AppTheme.accentGold : Colors.transparent,
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: AppTheme.accentGold,
-              width: 2,
+            gradient: LinearGradient(
+              colors: _isHovered
+                  ? [AppTheme.accentGoldLight, AppTheme.accentGold]
+                  : [AppTheme.accentGold, AppTheme.accentGold],
             ),
-            boxShadow: _isHovered
-                ? [
-                    BoxShadow(
-                      color: AppTheme.accentGold.withValues(alpha: 0.4),
-                      blurRadius: 20,
-                      spreadRadius: 2,
-                    ),
-                  ]
-                : null,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.accentGold.withValues(alpha: _isHovered ? 0.6 : 0.3),
+                blurRadius: _isHovered ? 24 : 12,
+                spreadRadius: _isHovered ? 2 : 0,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Text(
             'EXPLORE MY WORK',
             style: TextStyle(
-              color: _isHovered ? AppTheme.primaryDark : AppTheme.accentGold,
+              color: AppTheme.primaryDark,
               fontWeight: FontWeight.w600,
               letterSpacing: 2,
               fontSize: 14,

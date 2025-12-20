@@ -113,29 +113,34 @@ class _SocialButtonState extends State<_SocialButton> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
+          transform: Matrix4.identity()..scale(_isHovered ? 1.05 : 1.0),
+          transformAlignment: Alignment.center,
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
           decoration: BoxDecoration(
-            color: _isHovered ? AppTheme.accentGold : Colors.transparent,
+            color: AppTheme.accentGold,
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: AppTheme.accentGold,
-              width: 2,
-            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.accentGold.withValues(alpha: _isHovered ? 0.5 : 0.25),
+                blurRadius: _isHovered ? 20 : 10,
+                spreadRadius: _isHovered ? 2 : 0,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               FaIcon(
                 widget.icon,
-                color: _isHovered ? AppTheme.primaryDark : AppTheme.accentGold,
+                color: AppTheme.primaryDark,
                 size: widget.iconSize,
               ),
               const SizedBox(width: 12),
               Text(
                 widget.label,
-                style: TextStyle(
-                  color:
-                      _isHovered ? AppTheme.primaryDark : AppTheme.accentGold,
+                style: const TextStyle(
+                  color: AppTheme.primaryDark,
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
                 ),

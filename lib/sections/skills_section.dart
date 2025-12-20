@@ -145,7 +145,7 @@ class _SkillCategoryWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: AppTheme.accentGold.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: AppTheme.accentGold.withValues(alpha: 0.3),
                   ),
@@ -220,7 +220,7 @@ class _SkillChipState extends State<_SkillChip> {
         ),
         decoration: BoxDecoration(
           color: AppTheme.cardDark.withValues(alpha: 0.6),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: borderColor.withValues(alpha: 0.6),
             width: 1.5,

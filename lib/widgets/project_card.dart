@@ -67,7 +67,7 @@ class _ProjectCardState extends State<ProjectCard> {
           ..translate(0.0, _isHovered ? -8.0 : 0.0),
         decoration: BoxDecoration(
           color: AppTheme.cardDark,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: _isHovered
                 ? AppTheme.accentGold.withValues(alpha: 0.5)
@@ -85,7 +85,7 @@ class _ProjectCardState extends State<ProjectCard> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -252,17 +252,23 @@ class _GitHubButtonState extends State<_GitHubButton> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
+          transform: Matrix4.identity()..scale(_isHovered ? 1.05 : 1.0),
+          transformAlignment: Alignment.center,
           padding: EdgeInsets.symmetric(
             horizontal: widget.isMobile ? 16 : 20,
             vertical: widget.isMobile ? 10 : 12,
           ),
           decoration: BoxDecoration(
-            color: _isHovered ? AppTheme.accentGold : Colors.transparent,
+            color: AppTheme.accentGold,
             borderRadius: BorderRadius.circular(25),
-            border: Border.all(
-              color: AppTheme.accentGold,
-              width: 1.5,
-            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.accentGold.withValues(alpha: _isHovered ? 0.5 : 0.2),
+                blurRadius: _isHovered ? 16 : 8,
+                spreadRadius: _isHovered ? 1 : 0,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -270,13 +276,13 @@ class _GitHubButtonState extends State<_GitHubButton> {
               FaIcon(
                 FontAwesomeIcons.github,
                 size: widget.isMobile ? 16 : 18,
-                color: _isHovered ? AppTheme.primaryDark : AppTheme.accentGold,
+                color: AppTheme.primaryDark,
               ),
               const SizedBox(width: 8),
               Text(
                 'View on GitHub',
                 style: TextStyle(
-                  color: _isHovered ? AppTheme.primaryDark : AppTheme.accentGold,
+                  color: AppTheme.primaryDark,
                   fontSize: widget.isMobile ? 12 : 13,
                   fontWeight: FontWeight.w600,
                 ),

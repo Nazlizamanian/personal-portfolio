@@ -2,17 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Elegant dark theme with gold/amber accents
-  static const Color primaryDark = Color(0xFF0A0A0F);
-  static const Color secondaryDark = Color(0xFF12121A);
-  static const Color cardDark = Color(0xFF1A1A24);
-  static const Color accentGold = Color(0xFFD4AF37);
-  static const Color accentGoldLight = Color(0xFFE8C547);
-  static const Color textPrimary = Color(0xFFF5F5F5);
-  static const Color textSecondary = Color(0xFFB0B0B8);
-  static const Color textMuted = Color(0xFF707078);
-  static const Color dividerColor = Color(0xFF2A2A35);
-  static const Color glowColor = Color(0x40D4AF37);
+  // Dynamic dark theme with dark blue, purple, and pink accents
+  static const Color primaryDark = Color(0xFF050510);      // Deep dark blue-black
+  static const Color secondaryDark = Color(0xFF0A0A18);    // Dark blue tint
+  static const Color cardDark = Color(0xFF10101C);         // Card with blue undertone
+  
+  // Accent colors - purple as primary with blue and pink accents
+  static const Color accentGold = Color(0xFF9D4EDD);       // Vivid purple (main accent)
+  static const Color accentGoldLight = Color(0xFFB76EF0);  // Lighter purple
+  static const Color accentBlue = Color(0xFF4361EE);       // Electric blue
+  static const Color accentPink = Color(0xFFE879A9);       // Soft pink accent
+  static const Color accentPurple = Color(0xFF8B5CF6);     // Secondary purple
+  
+  static const Color textPrimary = Color(0xFFF8FAFC);
+  static const Color textSecondary = Color(0xFFCBD5E1);
+  static const Color textMuted = Color(0xFF64748B);
+  static const Color dividerColor = Color(0xFF1E293B);     // Blue-tinted divider
+  static const Color glowColor = Color(0x409D4EDD);
 
   static ThemeData get darkTheme {
     return ThemeData(
@@ -28,78 +34,78 @@ class AppTheme {
         onSurface: textPrimary,
       ),
       textTheme: TextTheme(
-        // DM Sans for titles (bold)
-        displayLarge: GoogleFonts.dmSans(
+        // Montserrat for headings (weight 900)
+        displayLarge: GoogleFonts.montserrat(
           fontSize: 72,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w900,
           color: textPrimary,
           letterSpacing: 2,
         ),
-        displayMedium: GoogleFonts.dmSans(
+        displayMedium: GoogleFonts.montserrat(
           fontSize: 48,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w900,
           color: textPrimary,
           letterSpacing: 1,
         ),
-        displaySmall: GoogleFonts.dmSans(
+        displaySmall: GoogleFonts.montserrat(
           fontSize: 36,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w900,
           color: textPrimary,
         ),
-        headlineLarge: GoogleFonts.dmSans(
+        headlineLarge: GoogleFonts.montserrat(
           fontSize: 32,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w900,
           color: textPrimary,
         ),
-        headlineMedium: GoogleFonts.dmSans(
+        headlineMedium: GoogleFonts.montserrat(
           fontSize: 24,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w900,
           color: textPrimary,
         ),
-        headlineSmall: GoogleFonts.dmSans(
+        headlineSmall: GoogleFonts.montserrat(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: textPrimary,
         ),
-        titleLarge: GoogleFonts.dmSans(
+        titleLarge: GoogleFonts.montserrat(
           fontSize: 18,
           fontWeight: FontWeight.w700,
           color: textPrimary,
         ),
-        titleMedium: GoogleFonts.dmSans(
+        titleMedium: GoogleFonts.montserrat(
           fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: textSecondary,
         ),
-        // Poppins for body/descriptions
-        bodyLarge: GoogleFonts.poppins(
+        // Inter for body/descriptions
+        bodyLarge: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w400,
           color: textSecondary,
           height: 1.7,
         ),
-        bodyMedium: GoogleFonts.poppins(
+        bodyMedium: GoogleFonts.inter(
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color: textSecondary,
           height: 1.6,
         ),
-        bodySmall: GoogleFonts.poppins(
+        bodySmall: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: textMuted,
         ),
-        labelLarge: GoogleFonts.poppins(
+        labelLarge: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: textPrimary,
         ),
-        labelMedium: GoogleFonts.poppins(
+        labelMedium: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: textSecondary,
         ),
-        labelSmall: GoogleFonts.poppins(
+        labelSmall: GoogleFonts.inter(
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: textMuted,
@@ -134,18 +140,22 @@ class AppTheme {
   }
 }
 
-// Elegant gradient decorations
+// Dynamic gradient decorations
 class AppDecorations {
+  // Standard border radius for cards
+  static const double cardRadius = 20.0;
+  static const double buttonRadius = 28.0;
+  
   static BoxDecoration get cardDecoration => BoxDecoration(
         color: AppTheme.cardDark,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(cardRadius),
         border: Border.all(
           color: AppTheme.dividerColor,
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -154,7 +164,9 @@ class AppDecorations {
 
   static BoxDecoration get glowingCircle => BoxDecoration(
         shape: BoxShape.circle,
-        color: AppTheme.accentGold,
+        gradient: const LinearGradient(
+          colors: [AppTheme.accentGold, AppTheme.accentGoldLight],
+        ),
         boxShadow: [
           BoxShadow(
             color: AppTheme.accentGold.withValues(alpha: 0.5),
@@ -162,7 +174,7 @@ class AppDecorations {
             spreadRadius: 2,
           ),
           BoxShadow(
-            color: AppTheme.accentGold.withValues(alpha: 0.3),
+            color: AppTheme.accentGoldLight.withValues(alpha: 0.3),
             blurRadius: 24,
             spreadRadius: 4,
           ),
@@ -174,16 +186,26 @@ class AppDecorations {
         end: Alignment.bottomRight,
         colors: [
           AppTheme.primaryDark,
-          AppTheme.secondaryDark.withValues(alpha: 0.8),
-          AppTheme.primaryDark,
+          const Color(0xFF0A0A1A), // Dark blue tint
+          const Color(0xFF0D0D1C), // Slight purple
+          AppTheme.secondaryDark,
         ],
       );
 
-  static LinearGradient get goldGradient => const LinearGradient(
+  static LinearGradient get accentGradient => const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          AppTheme.accentBlue,
+          AppTheme.accentGold,
+          AppTheme.accentGoldLight,
+        ],
+      );
+
+  static LinearGradient get purpleGradient => const LinearGradient(
         colors: [
           AppTheme.accentGold,
           AppTheme.accentGoldLight,
-          AppTheme.accentGold,
         ],
       );
 }

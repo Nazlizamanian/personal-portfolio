@@ -220,7 +220,7 @@ class _TimelineContent extends StatelessWidget {
       padding: EdgeInsets.all(isMobile ? 16 : 24),
       decoration: BoxDecoration(
         color: AppTheme.cardDark.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: AppTheme.dividerColor,
           width: 1,
@@ -532,17 +532,23 @@ class _LinkButtonState extends State<_LinkButton> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
+          transform: Matrix4.identity()..scale(_isHovered ? 1.05 : 1.0),
+          transformAlignment: Alignment.center,
           padding: EdgeInsets.symmetric(
             horizontal: widget.isMobile ? 16 : 20,
             vertical: widget.isMobile ? 10 : 12,
           ),
           decoration: BoxDecoration(
-            color: _isHovered ? AppTheme.accentGold : Colors.transparent,
+            color: AppTheme.accentGold,
             borderRadius: BorderRadius.circular(25),
-            border: Border.all(
-              color: AppTheme.accentGold,
-              width: 1.5,
-            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.accentGold.withValues(alpha: _isHovered ? 0.5 : 0.2),
+                blurRadius: _isHovered ? 16 : 8,
+                spreadRadius: _isHovered ? 1 : 0,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -550,13 +556,13 @@ class _LinkButtonState extends State<_LinkButton> {
               Icon(
                 Icons.open_in_new,
                 size: widget.isMobile ? 14 : 16,
-                color: _isHovered ? AppTheme.primaryDark : AppTheme.accentGold,
+                color: AppTheme.primaryDark,
               ),
               const SizedBox(width: 8),
               Text(
                 widget.text,
                 style: TextStyle(
-                  color: _isHovered ? AppTheme.primaryDark : AppTheme.accentGold,
+                  color: AppTheme.primaryDark,
                   fontSize: widget.isMobile ? 12 : 13,
                   fontWeight: FontWeight.w600,
                 ),

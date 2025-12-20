@@ -4,7 +4,7 @@
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0A0A0F",
-  "theme_color": "#D4AF37",
+  "theme_color": "#9D4EDD",
   "description": "Personal Portfolio - Software Developer",
   "orientation": "portrait-primary",
   "prefer_related_applications": false,

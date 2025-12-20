@@ -39,11 +39,23 @@ class ProjectCard extends StatefulWidget {
 
 class _ProjectCardState extends State<ProjectCard> {
   bool _isHovered = false;
+  Offset _hoverPosition = Offset.zero;
 
   Future<void> _launchUrl(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
+    }
+  }
+
+  void _onHover(PointerEvent event, Size cardSize) {
+    if (_isHovered) {
+      setState(() {
+        _hoverPosition = Offset(
+          (event.localPosition.dx / cardSize.width - 0.5) * 2,
+          (event.localPosition.dy / cardSize.height - 0.5) * 2,
+        );
+      });
     }
   }
 
@@ -53,126 +65,149 @@ class _ProjectCardState extends State<ProjectCard> {
         ? MediaQuery.of(context).size.width - 64
         : 380.0;
     final cardHeight = widget.isMobile ? 460.0 : 520.0;
+    
+    // Subtle 3D tilt effect
+    final tiltX = _isHovered && !widget.isMobile ? _hoverPosition.dy * 3.0 : 0.0;
+    final tiltY = _isHovered && !widget.isMobile ? -_hoverPosition.dx * 3.0 : 0.0;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
-        width: cardWidth,
-        height: cardHeight,
-        margin: const EdgeInsets.symmetric(horizontal: 12),
-        transform: Matrix4.identity()
-          ..translate(0.0, _isHovered ? -8.0 : 0.0),
-        decoration: BoxDecoration(
-          color: AppTheme.cardDark,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: _isHovered
-                ? AppTheme.accentGold.withValues(alpha: 0.5)
-                : AppTheme.dividerColor,
-            width: _isHovered ? 2 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: _isHovered
-                  ? AppTheme.accentGold.withValues(alpha: 0.2)
-                  : Colors.black.withValues(alpha: 0.3),
-              blurRadius: _isHovered ? 30 : 20,
-              offset: Offset(0, _isHovered ? 15 : 10),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Project image
-              Expanded(
-                flex: 3,
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppTheme.secondaryDark,
-                    image: widget.project.imageUrl.isNotEmpty
-                        ? DecorationImage(
-                            image: _getImageProvider(widget.project.imageUrl),
-                            fit: BoxFit.cover,
-                            alignment: widget.project.imageAlignment,
-                          )
-                        : null,
-                  ),
-                  child: widget.project.imageUrl.isEmpty
-                      ? Center(
-                          child: Icon(
-                            _getProjectIcon(widget.project.title),
-                            size: 64,
-                            color: AppTheme.accentGold.withValues(alpha: 0.4),
-                          ),
-                        )
-                      : null,
+      onExit: (_) => setState(() {
+        _isHovered = false;
+        _hoverPosition = Offset.zero;
+      }),
+      onHover: (event) => _onHover(event, Size(cardWidth, cardHeight)),
+      child: TweenAnimationBuilder<double>(
+        duration: const Duration(milliseconds: 200),
+        tween: Tween<double>(begin: 0, end: _isHovered ? 1 : 0),
+        builder: (context, value, child) {
+          return Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001)
+              ..rotateX(tiltX * 0.0174533 * value)
+              ..rotateY(tiltY * 0.0174533 * value)
+              ..translate(0.0, -8.0 * value),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              width: cardWidth,
+              height: cardHeight,
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: AppTheme.cardDark,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: _isHovered
+                      ? AppTheme.accentGold.withValues(alpha: 0.5)
+                      : AppTheme.dividerColor,
+                  width: _isHovered ? 2 : 1,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: _isHovered
+                        ? AppTheme.accentGold.withValues(alpha: 0.2)
+                        : Colors.black.withValues(alpha: 0.3),
+                    blurRadius: _isHovered ? 30 : 20,
+                    offset: Offset(
+                      tiltY * 2 * value,
+                      (_isHovered ? 15 : 10) + tiltX * 2 * value,
+                    ),
+                  ),
+                ],
               ),
-              // Project info
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: EdgeInsets.all(widget.isMobile ? 16 : 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Title
-                      Text(
-                        widget.project.title,
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontSize: widget.isMobile ? 18 : 20,
-                                  fontWeight: FontWeight.w600,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Project image
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: AppTheme.secondaryDark,
+                          image: widget.project.imageUrl.isNotEmpty
+                              ? DecorationImage(
+                                  image: _getImageProvider(widget.project.imageUrl),
+                                  fit: BoxFit.cover,
+                                  alignment: widget.project.imageAlignment,
+                                )
+                              : null,
+                        ),
+                        child: widget.project.imageUrl.isEmpty
+                            ? Center(
+                                child: Icon(
+                                  _getProjectIcon(widget.project.title),
+                                  size: 64,
+                                  color: AppTheme.accentGold.withValues(alpha: 0.4),
                                 ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                              )
+                            : null,
                       ),
-                      const SizedBox(height: 8),
-                      // Description
-                      Expanded(
-                        child: Text(
-                          widget.project.description,
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontSize: widget.isMobile ? 13 : 14,
-                                    height: 1.5,
-                                  ),
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
+                    ),
+                    // Project info
+                    Expanded(
+                      flex: 3,
+                      child: Padding(
+                        padding: EdgeInsets.all(widget.isMobile ? 16 : 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Title
+                            Text(
+                              widget.project.title,
+                              style:
+                                  Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                        fontSize: widget.isMobile ? 18 : 20,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 8),
+                            // Description
+                            Expanded(
+                              child: Text(
+                                widget.project.description,
+                                style:
+                                    Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          fontSize: widget.isMobile ? 13 : 14,
+                                          height: 1.5,
+                                        ),
+                                maxLines: 4,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            // Technologies
+                            if (widget.project.technologies.isNotEmpty)
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 6,
+                                children: widget.project.technologies
+                                    .take(4)
+                                    .map((tech) => _TechBadge(label: tech))
+                                    .toList(),
+                              ),
+                            const SizedBox(height: 16),
+                            // GitHub button
+                            if (widget.project.githubUrl != null)
+                              _GitHubButton(
+                                onTap: () => _launchUrl(widget.project.githubUrl!),
+                                isMobile: widget.isMobile,
+                              ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      // Technologies
-                      if (widget.project.technologies.isNotEmpty)
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 6,
-                          children: widget.project.technologies
-                              .take(4)
-                              .map((tech) => _TechBadge(label: tech))
-                              .toList(),
-                        ),
-                      const SizedBox(height: 16),
-                      // GitHub button
-                      if (widget.project.githubUrl != null)
-                        _GitHubButton(
-                          onTap: () => _launchUrl(widget.project.githubUrl!),
-                          isMobile: widget.isMobile,
-                        ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

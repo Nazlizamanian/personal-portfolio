@@ -8,6 +8,7 @@ import '../sections/projects_section.dart';
 import '../sections/skills_section.dart';
 import '../sections/languages_section.dart';
 import '../sections/contact_section.dart';
+import '../widgets/scroll_progress_indicator.dart';
 
 class PortfolioPage extends StatefulWidget {
   const PortfolioPage({super.key});
@@ -20,6 +21,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
   final ScrollController _scrollController = ScrollController();
   bool _showNavBar = false;
   int _currentSection = 0;
+  double _scrollProgress = 0.0;
 
   // Section keys for scrolling
   final GlobalKey _aboutKey = GlobalKey();
@@ -57,6 +59,13 @@ class _PortfolioPageState extends State<PortfolioPage> {
   void _onScroll() {
     final screenHeight = MediaQuery.of(context).size.height;
     final scrollOffset = _scrollController.offset;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+
+    // Update scroll progress for indicator
+    final newProgress = maxScroll > 0 ? scrollOffset / maxScroll : 0.0;
+    if ((_scrollProgress - newProgress).abs() > 0.001) {
+      setState(() => _scrollProgress = newProgress);
+    }
 
     // Show/hide navbar based on scroll position
     if (scrollOffset > screenHeight * 0.5 && !_showNavBar) {
@@ -157,12 +166,37 @@ class _PortfolioPageState extends State<PortfolioPage> {
             right: 0,
             child: _buildNavBar(context, isMobile),
           ),
+          // Scroll progress indicator at top
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic,
+            top: _showNavBar ? 72 : 0,
+            left: 0,
+            right: 0,
+            child: ScrollProgressIndicator(progress: _scrollProgress),
+          ),
+          // Section indicator dots (desktop only)
+          if (!isMobile)
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              right: _showNavBar ? 24 : -60,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: SectionIndicatorDots(
+                  totalSections: _sectionNames.length,
+                  currentSection: _currentSection,
+                  onDotTap: _handleNavTap,
+                ),
+              ),
+            ),
           // Scroll to top button
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeOutCubic,
             bottom: _showNavBar ? 24 : -60,
-            right: 24,
+            right: isMobile ? 24 : 80,
             child: _ScrollToTopButton(onPressed: _scrollToTop),
           ),
         ],
@@ -171,6 +205,9 @@ class _PortfolioPageState extends State<PortfolioPage> {
   }
 
   Widget _buildNavBar(BuildContext context, bool isMobile) {
+    final isTablet = AppTheme.isTablet(context);
+    final useCompactNav = isMobile || isTablet;
+    
     return Container(
       height: 72,
       decoration: BoxDecoration(
@@ -207,8 +244,8 @@ class _PortfolioPageState extends State<PortfolioPage> {
                   ),
             ),
           ),
-          // Navigation items
-          if (isMobile)
+          // Navigation items - use mobile menu for tablet too
+          if (useCompactNav)
             _MobileNavMenu(
               sectionNames: _sectionNames,
               currentSection: _currentSection,

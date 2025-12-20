@@ -1,49 +1,109 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../theme/app_theme.dart';
 import '../widgets/section_header.dart';
 
-class ContactSection extends StatelessWidget {
+class ContactSection extends StatefulWidget {
   const ContactSection({super.key});
+
+  @override
+  State<ContactSection> createState() => _ContactSectionState();
+}
+
+class _ContactSectionState extends State<ContactSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _entranceController;
+  late Animation<double> _fadeIn;
+  late Animation<Offset> _slideIn;
+  bool _hasAnimated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _entranceController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _entranceController, curve: Curves.easeOut),
+    );
+
+    _slideIn = Tween<Offset>(
+      begin: const Offset(0, 40),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _entranceController, curve: Curves.easeOutCubic),
+    );
+  }
+
+  @override
+  void dispose() {
+    _entranceController.dispose();
+    super.dispose();
+  }
+
+  void _onVisibilityChanged(VisibilityInfo info) {
+    if (!_hasAnimated && info.visibleFraction > 0.2) {
+      _hasAnimated = true;
+      _entranceController.forward();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final isMobile = AppTheme.isMobile(context);
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: AppTheme.getHorizontalPadding(context),
-        vertical: isMobile ? 60 : 100,
-      ),
-      child: Column(
-        children: [
-          const SectionHeader(
-            title: 'Get In Touch',
-            subtitle: 'Let\'s work together',
-          ),
-          Container(
-            constraints: BoxConstraints(
-              maxWidth: AppTheme.getMaxContentWidth(context),
+    return VisibilityDetector(
+      key: const Key('contact-section'),
+      onVisibilityChanged: _onVisibilityChanged,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppTheme.getHorizontalPadding(context),
+          vertical: isMobile ? 60 : 100,
+        ),
+        child: Column(
+          children: [
+            const SectionHeader(
+              title: 'Get In Touch',
+              subtitle: 'Let\'s work together',
             ),
-            child: Column(
-              children: [
-                Text(
-                  'I\'m always open to discussing new projects, creative ideas, '
-                  'or opportunities to be part of your vision. Feel free to reach out!',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontSize: isMobile ? 16 : 18,
+            AnimatedBuilder(
+              animation: _entranceController,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: _slideIn.value,
+                  child: Opacity(
+                    opacity: _fadeIn.value,
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: AppTheme.getMaxContentWidth(context),
                       ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-                // Social links
-                _buildSocialLinks(context),
-              ],
+                      child: Column(
+                        children: [
+                          Text(
+                            'I\'m always open to discussing new projects, creative ideas, '
+                            'or opportunities to be part of your vision. Feel free to reach out!',
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                  fontSize: isMobile ? 16 : 18,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 48),
+                          // Social links with staggered animation
+                          _buildSocialLinks(context),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

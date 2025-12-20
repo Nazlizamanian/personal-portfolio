@@ -65,6 +65,10 @@ class _LanguagesSectionState extends State<LanguagesSection> {
   Widget build(BuildContext context) {
     final isMobile = AppTheme.isMobile(context);
     final isDesktop = AppTheme.isDesktop(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // Use desktop layout only for wide screens (> 1100px)
+    final useDesktopLayout = isDesktop && screenWidth > 1100;
 
     return VisibilityDetector(
       key: const Key('languages-section'),
@@ -92,7 +96,7 @@ class _LanguagesSectionState extends State<LanguagesSection> {
               constraints: BoxConstraints(
                 maxWidth: AppTheme.getMaxContentWidth(context),
               ),
-              child: isDesktop
+              child: useDesktopLayout
                   ? _buildDesktopLayout(context)
                   : _buildMobileLayout(context, isMobile),
             ),
@@ -124,6 +128,20 @@ class _LanguagesSectionState extends State<LanguagesSection> {
   }
 
   Widget _buildMobileLayout(BuildContext context, bool isMobile) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = AppTheme.isTablet(context);
+    
+    // Calculate card width based on screen size
+    double cardWidth;
+    if (isMobile) {
+      cardWidth = (screenWidth - 48 - 16) / 2; // 2 columns with spacing
+    } else if (isTablet) {
+      cardWidth = (screenWidth - 96 - 48) / 4; // 4 columns on tablet
+      cardWidth = cardWidth.clamp(160.0, 220.0);
+    } else {
+      cardWidth = 200;
+    }
+    
     return Wrap(
       spacing: 16,
       runSpacing: 16,
@@ -132,9 +150,7 @@ class _LanguagesSectionState extends State<LanguagesSection> {
           .asMap()
           .entries
           .map((entry) => SizedBox(
-                width: isMobile
-                    ? MediaQuery.of(context).size.width * 0.42
-                    : 200,
+                width: cardWidth,
                 child: _LanguageCard(
                   language: entry.value,
                   isMobile: isMobile,

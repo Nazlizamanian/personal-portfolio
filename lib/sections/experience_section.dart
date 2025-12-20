@@ -1,10 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../theme/app_theme.dart';
 import '../widgets/section_header.dart';
 import '../widgets/glowing_timeline.dart';
 
-class ExperienceSection extends StatelessWidget {
+class ExperienceSection extends StatefulWidget {
   const ExperienceSection({super.key});
+
+  @override
+  State<ExperienceSection> createState() => _ExperienceSectionState();
+}
+
+class _ExperienceSectionState extends State<ExperienceSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _entranceController;
+  late Animation<double> _fadeIn;
+  late Animation<Offset> _slideIn;
+  bool _hasAnimated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _entranceController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _entranceController, curve: Curves.easeOut),
+    );
+
+    _slideIn = Tween<Offset>(
+      begin: const Offset(0, 40),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _entranceController, curve: Curves.easeOutCubic),
+    );
+  }
+
+  @override
+  void dispose() {
+    _entranceController.dispose();
+    super.dispose();
+  }
+
+  void _onVisibilityChanged(VisibilityInfo info) {
+    if (!_hasAnimated && info.visibleFraction > 0.2) {
+      _hasAnimated = true;
+      _entranceController.forward();
+    }
+  }
 
   static const List<TimelineItem> _experiences = [
     TimelineItem(
@@ -67,28 +112,43 @@ class ExperienceSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = AppTheme.isMobile(context);
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: AppTheme.getHorizontalPadding(context),
-        vertical: isMobile ? 60 : 100,
-      ),
-      decoration: BoxDecoration(
-        color: AppTheme.secondaryDark.withValues(alpha: 0.5),
-      ),
-      child: Column(
-        children: [
-          const SectionHeader(
-            title: 'Experience',
-            subtitle: 'My professional journey',
-          ),
-          Container(
-            constraints: BoxConstraints(
-              maxWidth: AppTheme.getMaxContentWidth(context),
+    return VisibilityDetector(
+      key: const Key('experience-section'),
+      onVisibilityChanged: _onVisibilityChanged,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppTheme.getHorizontalPadding(context),
+          vertical: isMobile ? 60 : 100,
+        ),
+        decoration: BoxDecoration(
+          color: AppTheme.secondaryDark.withValues(alpha: 0.5),
+        ),
+        child: Column(
+          children: [
+            const SectionHeader(
+              title: 'Experience',
+              subtitle: 'My professional journey',
             ),
-            child: const GlowingTimeline(items: _experiences),
-          ),
-        ],
+            AnimatedBuilder(
+              animation: _entranceController,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: _slideIn.value,
+                  child: Opacity(
+                    opacity: _fadeIn.value,
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: AppTheme.getMaxContentWidth(context),
+                      ),
+                      child: const GlowingTimeline(items: _experiences),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

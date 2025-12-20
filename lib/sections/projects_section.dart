@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../theme/app_theme.dart';
 import '../widgets/section_header.dart';
 import '../widgets/project_card.dart';
@@ -11,8 +12,13 @@ class ProjectsSection extends StatefulWidget {
   State<ProjectsSection> createState() => _ProjectsSectionState();
 }
 
-class _ProjectsSectionState extends State<ProjectsSection> {
+class _ProjectsSectionState extends State<ProjectsSection>
+    with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
+  late AnimationController _entranceController;
+  late Animation<double> _fadeIn;
+  late Animation<Offset> _slideIn;
+  bool _hasAnimated = false;
 
   static const List<ProjectData> _projects = [
     ProjectData(
@@ -59,36 +65,79 @@ class _ProjectsSectionState extends State<ProjectsSection> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _entranceController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _entranceController, curve: Curves.easeOut),
+    );
+
+    _slideIn = Tween<Offset>(
+      begin: const Offset(0, 30),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _entranceController, curve: Curves.easeOutCubic),
+    );
+  }
+
+  @override
   void dispose() {
     _scrollController.dispose();
+    _entranceController.dispose();
     super.dispose();
+  }
+
+  void _onVisibilityChanged(VisibilityInfo info) {
+    if (!_hasAnimated && info.visibleFraction > 0.15) {
+      _hasAnimated = true;
+      _entranceController.forward();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isMobile = AppTheme.isMobile(context);
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        vertical: isMobile ? 60 : 100,
-      ),
-      decoration: BoxDecoration(
-        color: AppTheme.secondaryDark.withValues(alpha: 0.5),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppTheme.getHorizontalPadding(context),
+    return VisibilityDetector(
+      key: const Key('projects-section'),
+      onVisibilityChanged: _onVisibilityChanged,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          vertical: isMobile ? 60 : 100,
+        ),
+        decoration: BoxDecoration(
+          color: AppTheme.secondaryDark.withValues(alpha: 0.5),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppTheme.getHorizontalPadding(context),
+              ),
+              child: const SectionHeader(
+                title: 'Projects',
+                subtitle: 'Some of my recent work',
+              ),
             ),
-            child: const SectionHeader(
-              title: 'Projects',
-              subtitle: 'Some of my recent work',
+            AnimatedBuilder(
+              animation: _entranceController,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: _slideIn.value,
+                  child: Opacity(
+                    opacity: _fadeIn.value,
+                    child: _buildHorizontalScroll(context, isMobile),
+                  ),
+                );
+              },
             ),
-          ),
-          _buildHorizontalScroll(context, isMobile),
-        ],
+          ],
+        ),
       ),
     );
   }

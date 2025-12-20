@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../theme/app_theme.dart';
 import '../widgets/section_header.dart';
 
@@ -71,7 +72,6 @@ class SkillsSection extends StatelessWidget {
         SkillItem(name: 'Docker', icon: 'docker', color: '2496ED'),
         SkillItem(name: 'PostgreSQL', icon: 'postgresql', color: '4169E1'),
         SkillItem(name: 'MongoDB', icon: 'mongodb', color: '47A248'),
-        SkillItem(name: 'VS Code', icon: 'visualstudiocode', color: '007ACC'),
       ],
     ),
     SkillCategory(
@@ -108,10 +108,11 @@ class SkillsSection extends StatelessWidget {
               maxWidth: AppTheme.getMaxContentWidth(context),
             ),
             child: Column(
-              children: _categories
-                  .map((category) => _SkillCategoryWidget(
-                        category: category,
+              children: _categories.asMap().entries
+                  .map((entry) => _SkillCategoryWidget(
+                        category: entry.value,
                         isMobile: isMobile,
+                        categoryIndex: entry.key,
                       ))
                   .toList(),
             ),
@@ -122,60 +123,154 @@ class SkillsSection extends StatelessWidget {
   }
 }
 
-class _SkillCategoryWidget extends StatelessWidget {
+class _SkillCategoryWidget extends StatefulWidget {
   final SkillCategory category;
   final bool isMobile;
+  final int categoryIndex;
 
   const _SkillCategoryWidget({
     required this.category,
     required this.isMobile,
+    this.categoryIndex = 0,
   });
 
   @override
+  State<_SkillCategoryWidget> createState() => _SkillCategoryWidgetState();
+}
+
+class _SkillCategoryWidgetState extends State<_SkillCategoryWidget>
+    with TickerProviderStateMixin {
+  late AnimationController _headerController;
+  late AnimationController _skillsController;
+  late Animation<double> _headerFade;
+  late Animation<Offset> _headerSlide;
+  bool _hasAnimated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _headerController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    
+    _skillsController = AnimationController(
+      duration: Duration(milliseconds: 400 + widget.category.skills.length * 50),
+      vsync: this,
+    );
+
+    _headerFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _headerController, curve: Curves.easeOut),
+    );
+
+    _headerSlide = Tween<Offset>(
+      begin: const Offset(-30, 0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _headerController, curve: Curves.easeOutCubic),
+    );
+  }
+
+  @override
+  void dispose() {
+    _headerController.dispose();
+    _skillsController.dispose();
+    super.dispose();
+  }
+
+  void _onVisibilityChanged(VisibilityInfo info) {
+    if (!_hasAnimated && info.visibleFraction > 0.2) {
+      _hasAnimated = true;
+      Future.delayed(Duration(milliseconds: widget.categoryIndex * 150), () {
+        if (mounted) {
+          _headerController.forward();
+          Future.delayed(const Duration(milliseconds: 200), () {
+            if (mounted) _skillsController.forward();
+          });
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 40),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Category header
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppTheme.accentGold.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppTheme.accentGold.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Icon(
-                  category.icon,
-                  color: AppTheme.accentGold,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Text(
-                category.title,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontSize: isMobile ? 18 : 22,
-                      fontWeight: FontWeight.w600,
+    return VisibilityDetector(
+      key: Key('skill-category-${widget.category.title}'),
+      onVisibilityChanged: _onVisibilityChanged,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Animated category header
+            AnimatedBuilder(
+              animation: _headerController,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: _headerSlide.value,
+                  child: Opacity(
+                    opacity: _headerFade.value,
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppTheme.accentGold.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: AppTheme.accentGold.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Icon(
+                            widget.category.icon,
+                            color: AppTheme.accentGold,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          widget.category.title,
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontSize: widget.isMobile ? 18 : 22,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ],
                     ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          // Skill items
-          Wrap(
-            spacing: isMobile ? 12 : 16,
-            runSpacing: isMobile ? 12 : 16,
-            children: category.skills
-                .map((skill) => _SkillChip(skill: skill, isMobile: isMobile))
-                .toList(),
-          ),
-        ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            // Staggered skill items
+            AnimatedBuilder(
+              animation: _skillsController,
+              builder: (context, child) {
+                return Wrap(
+                  spacing: widget.isMobile ? 12 : 16,
+                  runSpacing: widget.isMobile ? 12 : 16,
+                  children: List.generate(widget.category.skills.length, (index) {
+                    final staggerProgress = (_skillsController.value * widget.category.skills.length - index)
+                        .clamp(0.0, 1.0);
+                    final curvedProgress = Curves.easeOutCubic.transform(staggerProgress);
+                    
+                    return Transform.translate(
+                      offset: Offset(0, 20 * (1 - curvedProgress)),
+                      child: Opacity(
+                        opacity: curvedProgress,
+                        child: _SkillChip(
+                          skill: widget.category.skills[index],
+                          isMobile: widget.isMobile,
+                        ),
+                      ),
+                    );
+                  }),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

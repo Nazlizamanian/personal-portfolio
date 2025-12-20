@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import '../theme/app_theme.dart';
 import '../widgets/section_header.dart';
 
@@ -11,8 +12,12 @@ class AboutSection extends StatefulWidget {
 }
 
 class _AboutSectionState extends State<AboutSection>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _waveController;
+  late AnimationController _entranceController;
+  late Animation<double> _fadeIn;
+  late Animation<Offset> _slideIn;
+  bool _hasAnimated = false;
 
   @override
   void initState() {
@@ -21,45 +26,90 @@ class _AboutSectionState extends State<AboutSection>
       duration: const Duration(seconds: 4),
       vsync: this,
     )..repeat();
+
+    _entranceController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _entranceController, curve: Curves.easeOut),
+    );
+
+    _slideIn = Tween<Offset>(
+      begin: const Offset(0, 40),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _entranceController, curve: Curves.easeOutCubic),
+    );
   }
 
   @override
   void dispose() {
     _waveController.dispose();
+    _entranceController.dispose();
     super.dispose();
+  }
+
+  void _onVisibilityChanged(VisibilityInfo info) {
+    if (!_hasAnimated && info.visibleFraction > 0.2) {
+      _hasAnimated = true;
+      _entranceController.forward();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isMobile = AppTheme.isMobile(context);
+    final isTablet = AppTheme.isTablet(context);
     final screenWidth = MediaQuery.of(context).size.width;
+    
+    // Use mobile/stacked layout for screens under 900px
+    final useStackedLayout = isMobile || isTablet || screenWidth < 900;
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(
-        horizontal: AppTheme.getHorizontalPadding(context),
-        vertical: isMobile ? 60 : 100,
-      ),
-      child: Column(
-        children: [
-          const SectionHeader(
-            title: 'About Me',
-            subtitle: 'Crafting digital experiences with passion',
-          ),
-          if (isMobile)
-            _buildMobileLayout(context)
-          else
-            _buildDesktopLayout(context, screenWidth),
-        ],
+    return VisibilityDetector(
+      key: const Key('about-section'),
+      onVisibilityChanged: _onVisibilityChanged,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppTheme.getHorizontalPadding(context),
+          vertical: isMobile ? 60 : 100,
+        ),
+        child: Column(
+          children: [
+            const SectionHeader(
+              title: 'About Me',
+              subtitle: 'Crafting digital experiences with passion',
+            ),
+            AnimatedBuilder(
+              animation: _entranceController,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: _slideIn.value,
+                  child: Opacity(
+                    opacity: _fadeIn.value,
+                    child: useStackedLayout
+                        ? _buildMobileLayout(context)
+                        : _buildDesktopLayout(context, screenWidth),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildMobileLayout(BuildContext context) {
+    final isMobile = AppTheme.isMobile(context);
+    final profileSize = isMobile ? 180.0 : 220.0; // Larger on tablet
+    
     return Column(
       children: [
         _AnimatedProfileImage(
-          size: 180,
+          size: profileSize,
           animation: _waveController,
         ),
         const SizedBox(height: 40),
@@ -87,10 +137,25 @@ class _AboutSectionState extends State<AboutSection>
 
   Widget _buildAboutContent(BuildContext context) {
     final isMobile = AppTheme.isMobile(context);
+    final isTablet = AppTheme.isTablet(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // Use stacked/centered layout for smaller screens
+    final useCenteredLayout = isMobile || isTablet || screenWidth < 900;
+    
+    // Responsive font size for the name
+    double nameFontSize;
+    if (isMobile) {
+      nameFontSize = 32;
+    } else if (screenWidth < 900) {
+      nameFontSize = 40;
+    } else {
+      nameFontSize = 48;
+    }
 
     return Column(
       crossAxisAlignment:
-          isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+          useCenteredLayout ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
         Text(
           'Hello, I\'m',
@@ -98,18 +163,18 @@ class _AboutSectionState extends State<AboutSection>
                 color: AppTheme.accentGold,
                 letterSpacing: 2,
               ),
-          textAlign: isMobile ? TextAlign.center : TextAlign.start,
+          textAlign: useCenteredLayout ? TextAlign.center : TextAlign.start,
         ),
         const SizedBox(height: 8),
-        // Animated wave color name
+        // Animated wave color name with responsive sizing
         _WaveColorText(
           text: 'Nazli Zamanian',
           animation: _waveController,
           style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                fontSize: isMobile ? 36 : 48,
+                fontSize: nameFontSize,
                 fontWeight: FontWeight.w600,
               ),
-          textAlign: isMobile ? TextAlign.center : TextAlign.start,
+          textAlign: useCenteredLayout ? TextAlign.center : TextAlign.start,
         ),
         const SizedBox(height: 8),
         Text(
@@ -118,17 +183,22 @@ class _AboutSectionState extends State<AboutSection>
                 color: AppTheme.textSecondary,
                 fontWeight: FontWeight.w400,
               ),
-          textAlign: isMobile ? TextAlign.center : TextAlign.start,
+          textAlign: useCenteredLayout ? TextAlign.center : TextAlign.start,
         ),
         const SizedBox(height: 24),
-        Text(
-          'I am a passionate software engineer with expertise in building '
-          'cross-platform applications. With a keen eye for design and a love '
-          'for clean code, I create digital experiences that are both beautiful '
-          'and functional. My journey in tech has been driven by curiosity and '
-          'a constant desire to learn and innovate.',
-          style: Theme.of(context).textTheme.bodyLarge,
-          textAlign: isMobile ? TextAlign.center : TextAlign.start,
+        Container(
+          constraints: BoxConstraints(
+            maxWidth: useCenteredLayout ? 600 : double.infinity,
+          ),
+          child: Text(
+            'I am a passionate software engineer with expertise in building '
+            'cross-platform applications. With a keen eye for design and a love '
+            'for clean code, I create digital experiences that are both beautiful '
+            'and functional. My journey in tech has been driven by curiosity and '
+            'a constant desire to learn and innovate.',
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: useCenteredLayout ? TextAlign.center : TextAlign.start,
+          ),
         ),
       ],
     );
@@ -250,23 +320,30 @@ class _WaveColorText extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: textAlign == TextAlign.center 
-              ? MainAxisAlignment.center 
-              : MainAxisAlignment.start,
-          children: List.generate(text.length, (index) {
-            final char = text[index];
-            if (char == ' ') {
-              return SizedBox(width: (style?.fontSize ?? 16) * 0.3);
-            }
-            return Text(
-              char,
-              style: style?.copyWith(
-                color: _getColorForIndex(index, animation.value),
-              ),
-            );
-          }),
+        // Use FittedBox to prevent overflow and scale down if needed
+        return FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: textAlign == TextAlign.center 
+              ? Alignment.center 
+              : Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: textAlign == TextAlign.center 
+                ? MainAxisAlignment.center 
+                : MainAxisAlignment.start,
+            children: List.generate(text.length, (index) {
+              final char = text[index];
+              if (char == ' ') {
+                return SizedBox(width: (style?.fontSize ?? 16) * 0.3);
+              }
+              return Text(
+                char,
+                style: style?.copyWith(
+                  color: _getColorForIndex(index, animation.value),
+                ),
+              );
+            }),
+          ),
         );
       },
     );
